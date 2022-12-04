@@ -1,6 +1,7 @@
 build
 buildDebug
 buildRelease
+examples
 ThirdParty
 .vscode
 
