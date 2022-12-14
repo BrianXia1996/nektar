@@ -156,9 +156,37 @@ void IncNavierStokes::v_InitObject(bool DeclareField)
         vConvectiveType = m_session->GetTag("AdvectiveType");
     }
 
+
+    // std::string ProjectStr = m_session->GetSolverInfo("PROJECTION");
+    // std::string AdvectStr = m_session->GetSolverInfo("ADVECTIONTYPE");
+    if (m_projectionType==MultiRegions::eDiscontinuous)
+    {
+        vConvectiveType = "WeakDG";
+    }
+
+
     // Initialise advection
     m_advObject = SolverUtils::GetAdvectionFactory().CreateInstance(
         vConvectiveType, vConvectiveType);
+
+    if (vConvectiveType == "WeakDG")
+    {   
+        // Setting up Advection fluxvector
+        m_advObject->SetFluxVector(&IncNavierStokes::GetAdvectFluxVector, this);
+
+        // Setting up Riemann solver for advection operator
+        string riemName = "LaxFriedrichs";
+        // m_session->LoadSolverInfo("UpwindType", riemName, "Average");
+        SolverUtils::RiemannSolverSharedPtr riemannSolver;
+        riemannSolver = SolverUtils::GetRiemannSolverFactory()
+                                            .CreateInstance(riemName, m_session);
+        // Setting up parameters for advection operator Riemann solver
+        riemannSolver->SetVector(
+                    "N",       &IncNavierStokes::GetNormals, this);
+        // Concluding initialisation of advection / diffusion operators
+        m_advObject->SetRiemannSolver(riemannSolver);        
+    }
+
     m_advObject->InitObject(m_session, m_fields);
 
     // Set up arrays for moving reference frame
@@ -1124,6 +1152,8 @@ void IncNavierStokes::SetMRFDomainVelBCs(const NekDouble &time)
         }
     }
 }
+
+
 
 /**
  * Add an additional forcing term programmatically.

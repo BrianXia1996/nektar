@@ -144,6 +144,38 @@ public:
         return m_nConvectiveFields;
     }
 
+    /**
+     * @brief Return the GetAdvectFluxVector vector for the incompressible N-S equations.
+     *
+     * @param physfield   Fields.
+     * @param flux        Resulting flux.
+     */
+    void IncNavierStokes::GetAdvectFluxVector(
+        const Array<OneD, const Array<OneD, NekDouble>> &physfield, // inarray[var][p]
+        TensorOfArray3D<NekDouble> &flux) // flux[eqn][dir][p]
+    {
+        // size_t nVariables = physfield.size();
+        size_t nPts       = physfield[0].size();
+
+        for (int i = 0; i < m_spacedim; ++i)
+        {
+            for ( int j = 0; j < m_spacedim; ++i )
+            {
+                // for (size_t p = 0; p < nPts; ++p)
+                // {               
+                //     flux[i][j][p] = physfield[i][p] * physfield[j][p];
+                // }
+                // which one is better for performance?
+                Vmath::Vmul(nPts,physfield[i],1,physfield[j],1,flux[i][j],1);
+            }
+        }
+    }
+
+    const Array<OneD, const Array<OneD, NekDouble>> &GetNormals()
+    {
+        return m_traceNormals;
+    }
+
     void AddForcing(const SolverUtils::ForcingSharedPtr &pForce);
 
     virtual void v_GetPressure(

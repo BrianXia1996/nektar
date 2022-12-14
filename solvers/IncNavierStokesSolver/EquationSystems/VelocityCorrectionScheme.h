@@ -105,6 +105,14 @@ public:
         v_EvaluateAdvection_SetPressureBCs(inarray, outarray, time);
     }
 
+    void SolveHelmIP( const Array<OneD, const NekDouble> &inarray,
+                        Array<OneD, NekDouble> &outarray,
+                        const StdRegions::ConstFactorMap &factors,
+                        const StdRegions::VarCoeffMap &varcoeff,
+                        const MultiRegions::VarFactorsMap &varfactors,
+                        const Array<OneD, const NekDouble> &dirForcing,
+                        const bool PhysSpaceForcing);
+
 protected:
     /// bool to identify if spectral vanishing viscosity is active.
     bool m_useHomo1DSpecVanVisc;

@@ -34,6 +34,8 @@ IF( NEKTAR_SOLVER_INCNAVIERSTOKES )
         ./Filters/FilterAeroForcesSPM.cpp
         ./Forcing/ForcingMovingBody.cpp
         ./Forcing/ForcingStabilityCoupledLNS.cpp
+        ./RiemannSolvers/IncompressibleSolver.cpp
+        ./RiemannSolvers/LaxFriedrichsSolver.cpp
         )
 
     SUBDIRS(Utilities)      

@@ -628,14 +628,20 @@ void VelocityCorrectionScheme::v_DoInitialise(void)
     SetBoundaryConditions(m_time);
 
     // Ensure the initial conditions have correct BCs
-    for (size_t i = 0; i < m_fields.size(); ++i)
-    {
-        m_fields[i]->ImposeDirichletConditions(m_fields[i]->UpdateCoeffs());
-        m_fields[i]->LocalToGlobal();
-        m_fields[i]->GlobalToLocal();
-        m_fields[i]->BwdTrans(m_fields[i]->GetCoeffs(),
-                              m_fields[i]->UpdatePhys());
+    // Enforce C0 Continutiy of initial condiiton
+    if ((m_projectionType == MultiRegions::eGalerkin) ||
+        (m_projectionType == MultiRegions::eMixed_CG_Discontinuous))
+    {    
+        for (size_t i = 0; i < m_fields.size(); ++i)
+        {
+            m_fields[i]->ImposeDirichletConditions(m_fields[i]->UpdateCoeffs());
+            m_fields[i]->LocalToGlobal();
+            m_fields[i]->GlobalToLocal();
+            m_fields[i]->BwdTrans(m_fields[i]->GetCoeffs(),
+                                m_fields[i]->UpdatePhys());
+        }
     }
+
 }
 
 /**
@@ -1179,4 +1185,19 @@ void VelocityCorrectionScheme::AppendSVVFactors(
         }
     }
 }
+
+void SolveHelmIP( const Array<OneD, const NekDouble> &inarray,
+                    Array<OneD, NekDouble> &outarray,
+                    const StdRegions::ConstFactorMap &factors,
+                    const StdRegions::VarCoeffMap &varcoeff,
+                    const MultiRegions::VarFactorsMap &varfactors,
+                    const Array<OneD, const NekDouble> &dirForcing,
+                    const bool PhysSpaceForcing)
+{
+    boost::ignore_unused(varfactors, dirForcing);
+}
+
+
+
+
 } // namespace Nektar
