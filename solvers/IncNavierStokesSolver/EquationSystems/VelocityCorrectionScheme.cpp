@@ -720,11 +720,14 @@ void VelocityCorrectionScheme::v_EvaluateAdvection_SetPressureBCs(
         x->Apply(m_fields, inarray, outarray, time);
     }
 
-    // Calculate High-Order pressure boundary conditions
-    timer.Start();
-    m_extrapolation->EvaluatePressureBCs(inarray, outarray, m_kinvis);
-    timer.Stop();
-    timer.AccumulateRegion("Pressure BCs");
+    // if (m_projectionType==MultiRegions::eGalerkin ) // temperarily works only for CG, DG gives erorr
+    // {
+        // Calculate High-Order pressure boundary conditions
+        timer.Start();
+        m_extrapolation->EvaluatePressureBCs(inarray, outarray, m_kinvis);
+        timer.Stop();
+        timer.AccumulateRegion("Pressure BCs");
+    // }
 }
 
 /**
@@ -867,7 +870,7 @@ void VelocityCorrectionScheme::v_SolvePressure(
     StdRegions::ConstFactorMap factors;
     // Setup coefficient for equation
     factors[StdRegions::eFactorLambda] = 0.0;
-
+    factors[StdRegions::eFactorTau] = 1.0; // not used in CG, but required for HDG
     // Solver Pressure Poisson Equation
     m_pressure->HelmSolve(Forcing, m_pressure->UpdateCoeffs(), factors);
 
@@ -929,6 +932,7 @@ void VelocityCorrectionScheme::v_SolveViscous(
 
         // Setup coefficients for equation
         factors[StdRegions::eFactorLambda] = 1.0 / aii_Dt / m_diffCoeff[i];
+        factors[StdRegions::eFactorTau]= 1.0; // not used in CG, but required for HDG
         m_fields[i]->HelmSolve(Forcing[i], m_fields[i]->UpdateCoeffs(), factors,
                                varCoeffMap, varFactorsMap);
         m_fields[i]->BwdTrans(m_fields[i]->GetCoeffs(), outarray[i]);
@@ -1186,16 +1190,16 @@ void VelocityCorrectionScheme::AppendSVVFactors(
     }
 }
 
-void SolveHelmIP( const Array<OneD, const NekDouble> &inarray,
-                    Array<OneD, NekDouble> &outarray,
-                    const StdRegions::ConstFactorMap &factors,
-                    const StdRegions::VarCoeffMap &varcoeff,
-                    const MultiRegions::VarFactorsMap &varfactors,
-                    const Array<OneD, const NekDouble> &dirForcing,
-                    const bool PhysSpaceForcing)
-{
-    boost::ignore_unused(varfactors, dirForcing);
-}
+// void SolveHelmIP( const Array<OneD, const NekDouble> &inarray,
+//                     Array<OneD, NekDouble> &outarray,
+//                     const StdRegions::ConstFactorMap &factors,
+//                     const StdRegions::VarCoeffMap &varcoeff,
+//                     const MultiRegions::VarFactorsMap &varfactors,
+//                     const Array<OneD, const NekDouble> &dirForcing,
+//                     const bool PhysSpaceForcing)
+// {
+//     boost::ignore_unused(varfactors, dirForcing);
+// }
 
 
 

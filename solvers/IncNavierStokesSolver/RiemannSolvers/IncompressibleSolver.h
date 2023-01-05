@@ -72,14 +72,14 @@ protected:
         NEKERROR(ErrorUtil::efatal,
                  "This function should be defined by subclasses.");
     }
-    // 有什么用？
+
     virtual void v_PointSolve(ND uL, ND vL, ND wL, ND EL,
                               ND uR, ND vR, ND wR, ND ER,
                               ND nx, ND ny, ND nz,
                               ND &uf, ND &vf, ND &wf, ND &Ef)
     {
-        boost::ignore_unused(uL, vL, wL, EL, uR, vR,
-                             wR, ER, uf, vf, wf, Ef);
+        boost::ignore_unused(uL, vL, wL, EL, uR, vR, wR, ER,
+                             uf, vf, wf, Ef, nx, ny, nz);
         NEKERROR(ErrorUtil::efatal,
                  "This function should be defined by subclasses.");
     }

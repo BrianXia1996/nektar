@@ -68,6 +68,7 @@ void LaxFriedrichsSolver::v_PointSolve( NekDouble uL, NekDouble vL, NekDouble wL
                                         NekDouble nx, NekDouble ny, NekDouble nz,
                                         NekDouble &uf, NekDouble &vf, NekDouble &wf, NekDouble &Ef)
 {
+    boost::ignore_unused(EL, ER, Ef);   // currently energy eqn not supportred     
     // maximum eigenvalues
      auto LambdaL = 2.0*fabs(nx*uL+ny*vL+nz*wL);
      auto LambdaR = 2.0*fabs(nx*uR+ny*vR+nz*wR);

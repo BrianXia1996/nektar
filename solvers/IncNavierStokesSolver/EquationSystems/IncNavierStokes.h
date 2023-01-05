@@ -150,7 +150,7 @@ public:
      * @param physfield   Fields.
      * @param flux        Resulting flux.
      */
-    void IncNavierStokes::GetAdvectFluxVector(
+    void GetAdvectFluxVector(
         const Array<OneD, const Array<OneD, NekDouble>> &physfield, // inarray[var][p]
         TensorOfArray3D<NekDouble> &flux) // flux[eqn][dir][p]
     {
@@ -159,7 +159,7 @@ public:
 
         for (int i = 0; i < m_spacedim; ++i)
         {
-            for ( int j = 0; j < m_spacedim; ++i )
+            for ( int j = 0; j < m_spacedim; ++j )
             {
                 // for (size_t p = 0; p < nPts; ++p)
                 // {               
